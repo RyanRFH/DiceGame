@@ -39,47 +39,123 @@ const diceController = {
 
 //Handles creation of new game containers and the running of the game
 const gameController = {
+    playerTurn: 0,
+    playerCanRoll: [true],
+    numOfExtPlayers: 0,
+
+    //Handles the start menu
     startMenuController() {
+        //Makes start menu hidden and game container visible
         document.getElementById("startGameContainer").addEventListener("click", () => {
             document.getElementById("startGameContainer").style.display = "none";
-            document.getElementsByClassName("gameContainer")[0].style.display = "flex";
+            document.getElementById("gameContainerContainer").style.display = "flex";
+            document.getElementById("createNewGameButtonContainer").style.display = "flex";
         })
     },
 
-    //Creates duplicate of game container and appends it to the html body
+    //Handles creation of new game containers
     createDuplicateGame(playerScoresArray) {
+        let ranColours = ["red", "blue", "green", "purple", "orange", "white", "yellow"]
+
+        //Create a duplicate of game container
         let duplicateGame = document.getElementsByClassName("gameContainer")[0].cloneNode(true);
+
+        //Gives the new game container a random background colour
+        duplicateGame.style.backgroundColor = ranColours[Math.floor(Math.random() * 7)];
+
+        //Appends duplicated game container to game container container
         document.getElementById("gameContainerContainer").appendChild(duplicateGame);
+
+        //Adds the new players score to the players score array
         playerScoresArray.push(0);
-        console.log(playerScoresArray);
+
+        //Adds a player can role boolean to array
+        this.playerCanRoll.push(true);
+
+        //Increases number of extra players by 1
+        this.numOfExtPlayers++;
+
+        //Gives the game container the correct player name
+        document.getElementsByClassName("playerName")[playerScoresArray.length - 1].textContent = `Player: ${playerScoresArray.length}`;
     },
 
+    //Handles the gameplay
     runGame(playerScore, playerNumber) {
         let diceRoll = 0;
-        //Creates click event listener 
-        document.getElementsByClassName("diceRollButton")[playerNumber].addEventListener("click", (event) => {
-            document.getElementsByClassName("resultText")[playerNumber].style.visibility = "hidden";
-            document.getElementsByClassName("diceImage")[playerNumber].style.opacity = 1;
-            diceRoll = diceController.rollDice(playerNumber);
-            playerScore[playerNumber] += diceRoll;
-            document.getElementsByClassName("scoreText")[playerNumber].textContent = `Score : ${playerScore[playerNumber]}`;
-            
-            //A score of 20 means the player wins
-            if (playerScore[playerNumber] > 20) {
-                document.getElementsByClassName("resultText")[playerNumber].textContent = "You Win";
-                document.getElementsByClassName("resultText")[playerNumber].style.visibility = "visible";
-                playerScore[playerNumber] = 0;
-                return;
-            }
 
-            //A roll of one means the game is over and resets
-            if (diceRoll === 1) {
-                document.getElementsByClassName("resultText")[playerNumber].textContent = "You Lose";
-                document.getElementsByClassName("resultText")[playerNumber].style.visibility = "visible";
-                playerScore[playerNumber] = 0;
-                return;
+        //Creates click event listener
+        document.getElementsByClassName("diceRollButton")[playerNumber].addEventListener("click", (event) => {
+
+            //Checks if player can role and if its their turn to roll
+            if (this.playerCanRoll[playerNumber] === true && this.playerTurn === playerNumber) {
+
+                //Hides result text for all players, shows dice image, calls for a dice roll, adds dice roll to player score, 
+                //updates current score text
+                for (let i = 0; i < this.numOfExtPlayers + 1; i ++) {
+                    document.getElementsByClassName("resultText")[i].style.visibility = "hidden";
+                }
+                document.getElementsByClassName("diceImage")[playerNumber].style.opacity = 1;
+                diceRoll = diceController.rollDice(playerNumber);
+                playerScore[playerNumber] += diceRoll;
+                document.getElementsByClassName("currentScoreText")[playerNumber].textContent = `Current Score : ${playerScore[playerNumber]}`;
+
+                //A score of 20 means the player wins
+                if (playerScore[playerNumber] > 20) {
+                    document.getElementsByClassName("resultText")[playerNumber].textContent = "You Win";
+                    document.getElementsByClassName("resultText")[playerNumber].style.visibility = "visible";
+                    playerScore[playerNumber] = 0;
+                    this.playerTurn = 0;
+                    for (let i = 0; i < this.numOfExtPlayers + 1; i ++) {
+                        this.playerCanRoll[i] = true;
+                        playerScore[i] = 0;
+                        document.getElementsByClassName("currentScoreText")[i].textContent = `Current Score : 0`;
+                        document.getElementsByClassName("totalScoreText")[i].textContent = `Total Score : 0`;
+                    }
+                    return;
+                }
+
+                //A roll of one means the game is over and resets
+                if (diceRoll === 1) {
+
+                    //Displays you lose message, resets players score, updates current score display text, 
+                    //resets player turn back to 0 so game can start again, resets all player can roll bools
+                    document.getElementsByClassName("resultText")[playerNumber].textContent = "You Lose";
+                    document.getElementsByClassName("resultText")[playerNumber].style.visibility = "visible";
+                    playerScore[playerNumber] = 0;
+                    this.playerTurn = 0;
+                    for (let i = 0; i < this.numOfExtPlayers + 1; i ++) {
+                        this.playerCanRoll[i] = true;
+                        playerScore[i] = 0;
+                        document.getElementsByClassName("currentScoreText")[i].textContent = `Current Score : 0`;
+                        document.getElementsByClassName("totalScoreText")[i].textContent = `Total Score : 0`;
+                    }
+                    return;
+                }
             }
         });
+
+        //Hold button
+        document.getElementsByClassName("holdScoreButton")[playerNumber].addEventListener("click", () => {
+
+            //Checks if player has pressed hold button, if not then they can roll, and if if its the right players turn, 
+            //and makes sure there are more than 1 players in the game by checking the amount of holdScoreButtons in existence is 
+            //greater than 1 (because hold button is useless in single player game)
+            if (this.playerCanRoll[playerNumber] === true && this.playerTurn === playerNumber && this.numOfExtPlayers > 0) {
+                document.getElementsByClassName("totalScoreText")[playerNumber].textContent = `Total Score : ${playerScore[playerNumber]}`;
+                this.playerCanRoll[playerNumber] = false;
+                if (this.playerTurn === this.numOfExtPlayers) {
+                    this.playerTurn = 0;
+
+                    //Resets all players to be able to roll
+                    for (let i = 0; i < this.playerCanRoll.length; i ++) {
+                        this.playerCanRoll[i] = true;
+                        playerScore[i] = 0;
+                    }
+                } else {
+                    this.playerTurn++;
+                }
+            }
+        })
     }
 }
 
@@ -89,7 +165,7 @@ let amountOfExtraPlayers = 0;
 //Creates start menu
 gameController.startMenuController();
 
-//Creates 1 player game
+//Creates initial 1 player game
 gameController.runGame(playersScores, 0);
 
 //Creates duplicate game instance and gives it game functionality
@@ -98,73 +174,5 @@ document.getElementById("createNewGameButton").addEventListener("click", () => {
     amountOfExtraPlayers++;
     gameController.runGame(playersScores, amountOfExtraPlayers);
 });
-
-// document.getElementsByClassName("diceRollButton")[1].addEventListener("click", (event) => {
-//     document.getElementsByClassName("resultText")[1].style.visibility = "hidden";
-//     document.getElementsByClassName("diceImage")[1].style.opacity = 1;
-//     diceRoll2 = diceGame.rollDice(1);
-//     playerScore2 += diceRoll2;
-//     document.getElementsByClassName("scoreText")[1].textContent = `Score : ${playerScore2}`;
-    
-//     //A score of 20 means the player wins
-//     if (playerScore2 > 20) {
-//         document.getElementsByClassName("resultText")[1].textContent = "You Win";
-//         document.getElementsByClassName("resultText")[1].style.visibility = "visible";
-//         playerScore2 = 0;
-//     }
-
-//     //A roll of one means the game is over and resets
-//     if (diceRoll2 === 1) {
-//         document.getElementsByClassName("resultText")[1].textContent = "You Lose";
-//         document.getElementsByClassName("resultText")[1].style.visibility = "visible";
-//         playerScore2 = 0;
-//     }
-// });
-
-
-// console.log(document.getElementsByClassName("gameContainer")[1]);
-// console.log(document.getElementsByClassName("gameContainer")[0]);
-// console.log(document.querySelectorAll("diceRollButton"));
-// console.log(document.querySelectorAll("resultText"));
-
-// duplicateGame.addEventListener("click", (event) => {
-//     console.log(document.querySelectorAll("diceRollButton"));
-//     // console.log(document.querySelector("body button"));
-//     // console.log(document.querySelectorAll("resultText"));
-//     // console.log(document.querySelectorAll("div"));
-//     // console.log(duplicateGame);
-    
-
-//     console.log("test");
-// });
-
-// console.log(document.getElementsByClassName("diceRollButton")[0]);
-// document.getElementsByClassName("diceRollButton")[0].style.visibility = "hidden";
-
-
-// let playerScore = [0];
-// let diceRoll = 0;
-
-// document.getElementsByClassName("diceRollButton")[0].addEventListener("click", (event) => {
-//     document.getElementsByClassName("resultText")[0].style.visibility = "hidden";
-//     document.getElementsByClassName("diceImage")[0].style.opacity = 1;
-//     diceRoll = diceGame.rollDice(0);
-//     playerScore += diceRoll;
-//     document.getElementsByClassName("scoreText")[0].textContent = `Score : ${playerScore}`;
-    
-//     //A score of 20 means the player wins
-//     if (playerScore > 20) {
-//         document.getElementsByClassName("resultText")[0].textContent = "You Win";
-//         document.getElementsByClassName("resultText")[0].style.visibility = "visible";
-//         playerScore = 0;
-//     }
-
-//     //A roll of one means the game is over and resets
-//     if (diceRoll === 1) {
-//         document.getElementsByClassName("resultText")[0].textContent = "You Lose";
-//         document.getElementsByClassName("resultText")[0].style.visibility = "visible";
-//         playerScore = 0;
-//     }
-// });
 
 

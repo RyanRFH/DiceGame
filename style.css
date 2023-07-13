@@ -10,12 +10,14 @@ body {
     display: flex;
     width: 100vw;
     height: 75vh;
+    display: none;
 }
 
 #createNewGameButtonContainer {
     display: flex;
     justify-content: center;
     padding-top: 10px;
+    display: none;
 }
 
 #createNewGameButton {
@@ -29,7 +31,7 @@ body {
     align-items: center;
     justify-content: center;
     background-color: rgb(214, 251, 78);
-    display: none;
+    display: flex;
 }
 
 .gameContainer {
@@ -40,7 +42,6 @@ body {
     height: 75vh;
     flex-direction: column;
     background-color: rgb(214, 251, 78);
-    /* display: none; */
 }
 
 .resultText {
@@ -53,4 +54,27 @@ body {
 
 .diceRollButton {
     border: 5px outset;
+}
+.holdScoreButton {
+    border: 5px outset;
+}
+
+.currentScoreText {
+    display: flex;
+    background-color: rgb(225, 95, 216);
+    border-radius: 50px;
+    width: 25vw;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    justify-content: center;
+}
+
+.totalScoreText {
+    display: flex;
+    background-color: rgb(226, 107, 9);
+    border-radius: 50px;
+    width: 25vw;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    justify-content: center;
 }
