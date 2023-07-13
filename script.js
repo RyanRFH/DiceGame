@@ -7,46 +7,56 @@ const diceGame = {
     dice6: "./diceImages/six.png",
 
     rollDice() {
-        for (let i = 0; i < 2; i++) {
-            setTimeout(() => {
-
-                
-            console.log("test");
-        },1000)
-        }
-
         let randNumber;
         let diceImageVar = document.getElementById("diceImage");
+
         randNumber = Math.ceil(Math.random() * 6);
         switch (randNumber) {
             case 1:
                 diceImageVar.src = this.dice1;
-                break;
+                return 1;
             case 2:
                 diceImageVar.src = this.dice2;
-                break;
+                return 2;
             case 3:
                 diceImageVar.src = this.dice3;
-                break;
+                return 3;
             case 4:
                 diceImageVar.src = this.dice4;
-                break;
+                return 4;
             case 5:
                 diceImageVar.src = this.dice5;
-                break;
+                return 5;
             case 6:
                 diceImageVar.src = this.dice6;
-                break;
-            }
+                return 6;
+            default:
+                console.log("Error: Dice not found");
+        }
     },
-    
-    // runDiceAnimation(howManyTimesRollDice) {
-    //     for (let i = 0; i < howManyTimesRollDice; i++) {
-    //         setTimeout(this.rollDice, 1000);
-    //     }
-
-    // }
 }
+let playerScore = 0;
+let diceRoll = 0;
+document.getElementById("diceRollButton").addEventListener("click", (event) => {
+    document.getElementById("resultText").style.visibility = "hidden";
+    document.getElementById("diceImage").style.opacity = 1;
+    diceRoll = diceGame.rollDice();
+    playerScore += diceRoll;
+    document.getElementById("scoreText").textContent = `Score : ${playerScore}`;
+    
+    //A score of 20 means the player wins
+    if (playerScore > 20) {
+        document.getElementById("resultText").textContent = "You Win";
+        document.getElementById("resultText").style.visibility = "visible";
+        playerScore = 0;
+    }
 
-// diceGame.runDiceAnimation(3);
-diceGame.rollDice();
+    //A roll of one means the game is over and resets
+    if (diceRoll === 1) {
+        document.getElementById("resultText").textContent = "You Lose";
+        document.getElementById("resultText").style.visibility = "visible";
+        playerScore = 0;
+    }
+});
+
+
