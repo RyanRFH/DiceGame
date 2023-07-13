@@ -7,15 +7,24 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="gameContainer">
-        <h1 class="resultText">Placeholder</h1>
-        <div class="diceImageContainer">
-            <img class="diceImage" src="diceImages\one.png" width="150px" height="150px">
+    <div id="startGameContainer">
+        <button>Start New Game</button>
+    </div>
+    <div id="gameContainerContainer">
+        <div class="gameContainer">
+            <h1 class="resultText">Placeholder</h1>
+            <div class="diceImageContainer">
+                <img class="diceImage" src="diceImages\one.png" width="150px" height="150px">
+            </div>
+            <div class="rollDiceButtonContainer">
+                <button class="diceRollButton">Roll Dice</button>
+            </div>
+            <h3 class="scoreText">Score : 0</h3>
         </div>
-        <div class="rollDiceButtonContainer">
-            <button class="diceRollButton">Roll Dice</button>
-        </div>
-        <h3 class="scoreText">Score : 0</h3>
+    </div>
+
+    <div id="createNewGameButtonContainer">
+        <button id="createNewGameButton">Create New Game</button>
     </div>
     <script src="script.js"></script>
 </body>

@@ -39,10 +39,19 @@ const diceController = {
 
 //Handles creation of new game containers and the running of the game
 const gameController = {
+    startMenuController() {
+        document.getElementById("startGameContainer").addEventListener("click", () => {
+            document.getElementById("startGameContainer").style.display = "none";
+            document.getElementsByClassName("gameContainer")[0].style.display = "flex";
+        })
+    },
+
     //Creates duplicate of game container and appends it to the html body
-    createDuplicateGame() {
+    createDuplicateGame(playerScoresArray) {
         let duplicateGame = document.getElementsByClassName("gameContainer")[0].cloneNode(true);
-        document.body.appendChild(duplicateGame);
+        document.getElementById("gameContainerContainer").appendChild(duplicateGame);
+        playerScoresArray.push(0);
+        console.log(playerScoresArray);
     },
 
     runGame(playerScore, playerNumber) {
@@ -72,15 +81,23 @@ const gameController = {
             }
         });
     }
-
 }
 
+let playersScores = [0];
+let amountOfExtraPlayers = 0;
 
-let playersScores = [0, 0];
-gameController.createDuplicateGame();
+//Creates start menu
+gameController.startMenuController();
+
+//Creates 1 player game
 gameController.runGame(playersScores, 0);
-gameController.runGame(playersScores, 1);
 
+//Creates duplicate game instance and gives it game functionality
+document.getElementById("createNewGameButton").addEventListener("click", () => {
+    gameController.createDuplicateGame(playersScores);
+    amountOfExtraPlayers++;
+    gameController.runGame(playersScores, amountOfExtraPlayers);
+});
 
 // document.getElementsByClassName("diceRollButton")[1].addEventListener("click", (event) => {
 //     document.getElementsByClassName("resultText")[1].style.visibility = "hidden";
